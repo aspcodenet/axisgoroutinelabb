@@ -1,0 +1,36 @@
+func main() {
+	resultChannel := make(chan bool)
+	file, _ := os.Open("day1input.txt")
+	defer file.Close()
+
+	//var wg sync.WaitGroup
+	total := 0
+	rd := bufio.NewScanner(file)
+	for rd.Scan() {
+		total++
+		talet, _ := strconv.Atoi(rd.Text())
+		// other code what work with parsed line...
+		go func() {
+			//defer wg.Done()
+			CheckIfEven(talet, resultChannel)
+		}()
+	}
+	antal := 0
+	received := 0
+	for received < total {
+		res := <-resultChannel
+		if res {
+			antal++
+		}
+		received++
+	}
+	fmt.Println(antal)
+
+}
+
+func CheckIfEven(talet int, channel chan bool) {
+	sl := time.Duration(rand.Intn(4000) + 1000)
+	time.Sleep(time.Millisecond * sl)
+	res := talet%2 == 0
+	channel <- res
+}
